@@ -2,6 +2,8 @@
 require('connect.php');
 require('authorize.php');
 
+$isValidId = filter_input(INPUT_GET, 'event_id', FILTER_VALIDATE_INT);
+
 if($_POST &&
    isset($_POST['update']) &&
    isset($_POST['title']) &&
@@ -24,8 +26,8 @@ if($_POST &&
 
     header("Location: admin.php");
     exit;
-} //Retrieve event data
-elseif(isset($_GET['event_id'])){
+}
+elseif(isset($_GET['event_id']) && $isValidId){
     $id = filter_input(INPUT_GET, 'event_id', FILTER_SANITIZE_NUMBER_INT);
 
     $query = "SELECT * FROM events WHERE event_id = :event_id";
@@ -33,6 +35,19 @@ elseif(isset($_GET['event_id'])){
     $statement->bindValue(':event_id', $id, PDO::PARAM_INT);
     $statement->execute();
     $row = $statement->fetch();
+
+    if(!isset($row['event_id'])){
+        header("Location: error.php");
+        exit;
+    }
+}
+elseif($_POST && $isValid = strlen($_POST['title']) < 1 || strlen($_POST['content']) < 1 ? true : false){
+    header("Location: error.php");
+    exit;
+}
+elseif(!$isValidId){
+    header("Location: admin.php");
+    exit;
 }
 ?>
 
