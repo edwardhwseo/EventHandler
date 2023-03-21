@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 require('connect.php');
 require('authorize.php');
 
@@ -32,14 +34,15 @@ if(isset($_POST['delete'])){
   <title>Administrator Page</title>
 </head>
 <body>
+  <?php if(isset($_SESSION['user_role_id']) && $_SESSION['user_role_id'] == 1): ?>
   <div class="container">
     <div>
       <h1>Administrator Page</h1>
     </div>
     <form action="create.php" method="post">
       <div class="my-2">
+        <a class="btn btn-outline-success" href="index.php">Home</a>
         <button class="btn btn-outline-primary" type="submit">Create Event Type</button>
-
       </div>
     </form>
     <div>
@@ -69,5 +72,8 @@ if(isset($_POST['delete'])){
       </ul>
     </div>
   </div>
+  <?php else: ?>
+    <?php header("Location: unauthorized.php") ?>
+  <?php endif ?>
 </body>
 </html>
