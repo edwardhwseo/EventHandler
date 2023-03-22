@@ -52,8 +52,9 @@ function validate(e){
 
                 //User login
                 if(response['validPassword']){
+                const user_id = response['user']['user_id'];
                 const user_role_id = response['user']['user_role_id'];
-                    fetch('login_user.php?username=' + username + '&user_role_id=' + user_role_id)
+                    fetch('login_user.php?user_id=' + user_id + '&username=' + username + '&user_role_id=' + user_role_id)
                     window.location.replace('./index.php');
                 }
             }
