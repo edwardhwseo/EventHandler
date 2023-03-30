@@ -3,14 +3,6 @@ session_start();
 require('connect.php');
 
 //Pagination
-/*$records_per_page = 2;
-
-$query = "SELECT * FROM posts";
-$post_statement = $db->prepare($query);
-$post_statement->execute();
-$total_records = $post_statement->rowCount();
-$total_pages = ceil($total_records / $records_per_page);*/
-
 if(isset($_GET['page'])){
     $page = $_GET['page'];
 }
@@ -36,21 +28,38 @@ if(isset($_GET['search']) && strlen($_GET['search']) > 0){
     $total_records = 0;
     $total_pages = 0;
 
+    //Determine total pages
+
+    if(isset($_GET['type']) && $_GET['type'] != 0){
+        $event_id = filter_input(INPUT_GET, 'type', FILTER_SANITIZE_NUMBER_INT);
+        $query = "SELECT * FROM posts p JOIN users u ON u.user_id = p.user_id WHERE event_id = :event_id AND title LIKE '%$keyword%'";
+        $statement_post = $db->prepare($query);
+        $statement_post->bindValue(':event_id', $event_id, PDO::PARAM_INT);
+        $statement_post->execute();
+        $total_records = $statement_post->rowCount();
+    }
+    else{
+        $query = "SELECT * FROM posts p JOIN users u ON u.user_id = p.user_id WHERE title LIKE '%$keyword%' OR content LIKE '%$keyword%'";
+        $statement_post = $db->prepare($query);
+        $statement_post->execute();
+        $total_records = $statement_post->rowCount();
+    }
+
+    $total_pages = ceil($total_records / $records_per_page);
+
+    //Query with LIMIT
+
     if(isset($_GET['type']) && $_GET['type'] != 0){
         $event_id = filter_input(INPUT_GET, 'type', FILTER_SANITIZE_NUMBER_INT);
         $query = "SELECT * FROM posts p JOIN users u ON u.user_id = p.user_id WHERE event_id = :event_id AND title LIKE '%$keyword%' LIMIT $inital_row, $limit";
         $statement_post = $db->prepare($query);
         $statement_post->bindValue(':event_id', $event_id, PDO::PARAM_INT);
         $statement_post->execute();
-        $total_records = $statement_post->rowCount();
-        $total_pages = ceil($total_records / $records_per_page);
     }
     else{
         $query = "SELECT * FROM posts p JOIN users u ON u.user_id = p.user_id WHERE title LIKE '%$keyword%' OR content LIKE '%$keyword%' LIMIT $inital_row, $limit";
         $statement_post = $db->prepare($query);
         $statement_post->execute();
-        $total_records = $statement_post->rowCount();
-        $total_pages = ceil($total_records / $records_per_page);
     }
 }
 ?>
@@ -147,6 +156,7 @@ if(isset($_GET['search']) && strlen($_GET['search']) > 0){
                     <?php if($page >=2): ?>
                         <a href="search_post.php?search=<?= $_GET['search'] ?>&type=<?= $_GET['type'] ?>&page=<?= $page-1 ?>">Prev</a>
                     <?php endif ?>
+                    <?php if($total_records > $records_per_page): ?>
                     <?php for($i=1; $i <= $total_pages; $i++): ?>
                         <?php if($i == $page): ?>
                             <a class="text-decoration-none active" href="search_post.php?search=<?= $_GET['search'] ?>&type=<?= $_GET['type'] ?>&page=<?= $i ?>"><?= $i ?></a>
@@ -154,7 +164,8 @@ if(isset($_GET['search']) && strlen($_GET['search']) > 0){
                             <a class="text-decoration-none" href="search_post.php?search=<?= $_GET['search'] ?>&type=<?= $_GET['type'] ?>&page=<?= $i ?>"><?= $i ?></a>
                         <?php endif ?>
                     <?php endfor ?>
-                    <?php if($page <= $total_pages): ?>
+                    <?php endif ?>
+                    <?php if($page < $total_pages): ?>
                         <a href="search_post.php?search=<?= $_GET['search'] ?>&type=<?= $_GET['type'] ?>&page=<?= $page+1 ?>">Next</a>
                     <?php endif ?>
                 </div>
