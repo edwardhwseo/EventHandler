@@ -1,4 +1,12 @@
 <?php
+
+/*******w******** 
+    
+    Name: Edward Seo
+    Description: Page that displays search results
+
+****************/
+
 session_start();
 require('connect.php');
 
@@ -152,21 +160,21 @@ if(isset($_GET['search']) && strlen($_GET['search']) > 0){
                         </div>
                     </div>
                 <?php endwhile ?>
-                <div>
+                <div class="d-flex justify-content-center">
                     <?php if($page >=2): ?>
-                        <a href="search_post.php?search=<?= $_GET['search'] ?>&type=<?= $_GET['type'] ?>&page=<?= $page-1 ?>">Prev</a>
+                        <a class="mx-2" href="search_post.php?search=<?= $_GET['search'] ?>&type=<?= $_GET['type'] ?>&page=<?= $page-1 ?>">Prev</a>
                     <?php endif ?>
                     <?php if($total_records > $records_per_page): ?>
-                    <?php for($i=1; $i <= $total_pages; $i++): ?>
-                        <?php if($i == $page): ?>
-                            <a class="text-decoration-none active" href="search_post.php?search=<?= $_GET['search'] ?>&type=<?= $_GET['type'] ?>&page=<?= $i ?>"><?= $i ?></a>
-                        <?php else: ?>
-                            <a class="text-decoration-none" href="search_post.php?search=<?= $_GET['search'] ?>&type=<?= $_GET['type'] ?>&page=<?= $i ?>"><?= $i ?></a>
-                        <?php endif ?>
-                    <?php endfor ?>
+                        <?php for($i=1; $i <= $total_pages; $i++): ?>
+                            <?php if($i == $page): ?>
+                                <a class="text-decoration-none active mx-1" href="search_post.php?search=<?= $_GET['search'] ?>&type=<?= $_GET['type'] ?>&page=<?= $i ?>"><?= $i ?></a>
+                            <?php else: ?>
+                                <a class="text-decoration-none mx-1" href="search_post.php?search=<?= $_GET['search'] ?>&type=<?= $_GET['type'] ?>&page=<?= $i ?>"><?= $i ?></a>
+                            <?php endif ?>
+                        <?php endfor ?>
                     <?php endif ?>
                     <?php if($page < $total_pages): ?>
-                        <a href="search_post.php?search=<?= $_GET['search'] ?>&type=<?= $_GET['type'] ?>&page=<?= $page+1 ?>">Next</a>
+                        <a class="mx-2" href="search_post.php?search=<?= $_GET['search'] ?>&type=<?= $_GET['type'] ?>&page=<?= $page+1 ?>">Next</a>
                     <?php endif ?>
                 </div>
         <?php else: ?>
