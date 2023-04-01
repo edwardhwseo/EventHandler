@@ -6,6 +6,17 @@
     Description: Contains functions for image uploads
 
 ****************/
+require '\xampp\htdocs\a\php-image-resize-master\lib\ImageResize.php';
+require '\xampp\htdocs\a\php-image-resize-master\lib\ImageResizeException.php';
+
+function resize_image($temp_path, $new_path){
+    //$new_image_path = "." . DIRECTORY_SEPARATOR . "uploads" . DIRECTORY_SEPARATOR . $post_id . basename($image_path);
+    $image = new \Gumlet\ImageResize($temp_path);
+    $image->resizeToWidth(300);
+    $image->save($new_path);
+
+    //return basename($new_image_path);
+}
 
 function resize_medium_and_thumbnail($image){
     $extension = pathinfo($image, PATHINFO_EXTENSION);
@@ -40,6 +51,7 @@ function file_is_an_image($temp_path, $new_path){
 
     return $file_extension_is_valid && $mime_type_is_valid;
 }
+
 function file_is_a_pdf($temp_path, $new_path){
     $allowed_mime_type = 'application/pdf';
     $allowed_file_extension = 'pdf';
@@ -51,5 +63,15 @@ function file_is_a_pdf($temp_path, $new_path){
     $mime_type_is_valid = $actual_mime_type == $allowed_mime_type ? true : false;
 
     return $file_extension_is_valid && $mime_type_is_valid;
+}
+
+function delete_file($file_name, $upload_subfolder_name = 'uploads'){
+    $current_folder = dirname(__FILE__);
+    
+    $path_segments = [$current_folder, $upload_subfolder_name, basename($file_name)];
+    
+    $image_path = join(DIRECTORY_SEPARATOR, $path_segments);
+
+    unlink($image_path);
 }
 ?>
